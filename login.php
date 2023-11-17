@@ -1,6 +1,8 @@
 <?php
 require_once('auth.php');
 
+$message = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'];
     $password = $_POST['password'];
@@ -9,10 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: index.php");
         exit();
     } else {
-        echo "Identifiants incorrects";
+        $message = "Identifiants incorrects";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,6 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="bg-gray-100 h-screen flex items-center justify-center">
     <div class="max-w-md w-full p-6 bg-white rounded-md shadow-md">
         <h2 class="text-2xl font-semibold mb-6">Connexion</h2>
+
+        <?php if (!empty($message)) : ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Erreur!</strong>
+                <span class="block sm:inline"><?php echo $message; ?></span>
+            </div>
+        <?php endif; ?>
+
         <form method="post">
             <div class="mb-4">
                 <label for="pseudo" class="block text-gray-700 text-sm font-bold mb-2">Pseudo:</label>

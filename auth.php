@@ -15,16 +15,10 @@ function authenticateUser($pseudo, $password) {
             $_SESSION['user_id'] = $row['id'];  // Si vous souhaitez stocker d'autres informations de l'utilisateur
             $conn->close();
             return true;
-        } else {
-            echo "Mot de passe incorrect";
         }
-    } else {
-        echo "Utilisateur non trouvé";
     }
 
     $conn->close();
     return false;
 }
 ?>
-
-
