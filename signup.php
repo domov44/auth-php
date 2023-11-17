@@ -1,15 +1,12 @@
 <?php
+require_once('db.php');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conn = new mysqli("localhost", "root", "", "zechifoumi");
-
-    if ($conn->connect_error) {
-        die("La connexion à la base de données a échoué: " . $conn->connect_error);
-    }
-
     $pseudo = $_POST['pseudo'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
+    $conn = connectDB();
     $sql = "INSERT INTO user (pseudo, email, password) VALUES ('$pseudo', '$email', '$password')";
 
     if ($conn->query($sql) === TRUE) {
@@ -17,10 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo "Erreur lors de l'inscription: " . $conn->error;
     }
+
     $conn->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

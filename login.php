@@ -1,33 +1,16 @@
 <?php
-session_start();
+require_once('auth.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conn = new mysqli("localhost", "root", "", "zechifoumi");
-
-    if ($conn->connect_error) {
-        die("La connexion à la base de données a échoué: " . $conn->connect_error);
-    }
-
     $pseudo = $_POST['pseudo'];
     $password = $_POST['password'];
 
-    $result = $conn->query("SELECT id, password FROM user WHERE pseudo = '$pseudo'");
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-
-        if (password_verify($password, $row['password'])) {
-            $token = bin2hex(random_bytes(16));
-            $_SESSION['token'] = $token;
-            header("Location: index.php");
-            exit();
-        } else {
-            echo "Mot de passe incorrect";
-        }
+    if (authenticateUser($pseudo, $password)) {
+        header("Location: index.php");
+        exit();
     } else {
-        echo "Utilisateur non trouvé";
+        echo "Identifiants incorrects";
     }
-    $conn->close();
 }
 ?>
 <!DOCTYPE html>
@@ -39,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <h2>Connexion</h2>
-    <form method="post">
+    <form action="login.php" method="post">
         <label for="pseudo">Pseudo:</label>
         <input type="text" id="pseudo" name="pseudo" required><br>
 
@@ -50,4 +33,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 </body>
 </html>
-
