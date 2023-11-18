@@ -6,18 +6,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-    $conn = connectDB();
-    $sql = "INSERT INTO user (pseudo, email, password) VALUES ('$pseudo', '$email', '$password')";
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $conn = connectDB();
 
-    if ($conn->query($sql) === TRUE) {
-        echo "Inscription réussie!";
+        $stmt = $conn->prepare("INSERT INTO user (pseudo, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $pseudo, $email, $password);
+
+        if ($stmt->execute()) {
+            echo "Inscription réussie!";
+        } else {
+            error_log("Erreur lors de l'inscription: " . $stmt->error);
+            echo "Erreur lors de l'inscription. Veuillez réessayer ultérieurement.";
+        }
+
+        $stmt->close();
+        $conn->close();
     } else {
-        echo "Erreur lors de l'inscription: " . $conn->error;
+        echo "Adresse email non valide. Veuillez fournir une adresse email valide.";
     }
-
-    $conn->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
