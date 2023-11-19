@@ -1,5 +1,11 @@
 <?php
 require_once('auth.php');
+require_once('session.php');
+
+if (isLoggedIn()) {
+    header("Location: index.php");
+    exit();
+}
 
 $message = '';
 

@@ -1,5 +1,9 @@
 <?php
 require_once('db.php');
+require_once('auth.php');
+require_once('session.php');
+
+$message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'];
@@ -13,19 +17,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sss", $pseudo, $email, $password);
 
         if ($stmt->execute()) {
-            echo "Inscription réussie!";
+            if (authenticateUser($pseudo, $_POST['password'])) {
+                session_start();
+                $_SESSION['pseudo'] = $pseudo;
+                header("Location: index.php");
+                exit();
+            } else {
+                $message = "Erreur lors de la connexion après l'inscription.";
+            }
         } else {
-            error_log("Erreur lors de l'inscription: " . $stmt->error);
-            echo "Erreur lors de l'inscription. Veuillez réessayer ultérieurement.";
+            $message = "Erreur lors de l'inscription. Veuillez réessayer ultérieurement.";
+            error_log("Erreur lors de l'inscription : " . $stmt->error);
         }
 
         $stmt->close();
         $conn->close();
     } else {
-        echo "Adresse email non valide. Veuillez fournir une adresse email valide.";
+        $message = "Adresse e-mail invalide. Veuillez fournir une adresse e-mail valide.";
     }
 }
+
+if (isLoggedIn()) {
+    header("Location: index.php");
+    exit();
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Mot de passe:</label>
                 <input type="password" id="password" name="password" class="w-full px-3 py-2 border rounded-md">
             </div>
-
+            <?php if (!empty($message)) : ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Erreur!</strong>
+                    <span class="block sm:inline"><?php echo $message; ?></span>
+                </div>
+            <?php endif; ?>
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">S'inscrire</button>
             <a href="http://localhost/login/login.php" class="block mt-2 text-blue-500">J'ai déjà un compte</a>
         </form>
