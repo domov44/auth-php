@@ -22,6 +22,7 @@ if (!isLoggedIn()) {
         <h2 class="text-2xl font-semibold mb-6">Bienvenue sur la page protégée!</h2>
 
         <form method="post" action="logout.php">
+            <a href="edit.php" class="bg-blue-500 text-white px-4 py-2 rounded-md">Modifier mon compte</a>
             <button type="submit" name="logout" class="bg-red-500 text-white px-4 py-2 rounded-md">Déconnexion</button>
         </form>
     </div>
